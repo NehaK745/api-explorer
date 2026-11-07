@@ -10,8 +10,11 @@ Browse any REST API from the VS Code sidebar. Pick a base URL, choose which endp
 - **Works with any JSON API.** Handles plain arrays, wrapped results like `{ "products": [...] }`, and single objects.
 - **Status bar shortcut** showing the current base URL. Click it to change it.
 - **Friendly errors** with a 10 second timeout, so a slow or broken API never freezes the editor.
+  
 
 ## Getting started
+
+[**Install API Explorer from the VS Code Marketplace**](https://marketplace.visualstudio.com/items?itemName=NehaDev.rest-api-explorer-tree)
 
 1. Click the **API Explorer** icon in the Activity Bar.
 2. Expand a folder to load its items.
