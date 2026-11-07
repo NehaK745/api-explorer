@@ -1,6 +1,10 @@
-A Visual Studio Code extension for exploring REST APIs.
+##A Visual Studio Code extension for exploring REST APIs.
 
-<img width="1892" height="917" alt="image" src="https://github.com/user-attachments/assets/718fecd4-5cdb-48d2-a424-fc826a81992e" />
+
+
+<img width="1877" height="815" alt="image" src="https://github.com/user-attachments/assets/047766d3-2a93-410e-bc99-e711155d851c" />
+
+
 
 
 ## Features
