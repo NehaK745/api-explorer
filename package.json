@@ -1,6 +1,7 @@
 {
   "name": "api-explorer",
   "publisher": "neha-dev",
+  "license": "MIT",
   "displayName": "api-explorer",
   "description": "new",
   "version": "0.0.1",
