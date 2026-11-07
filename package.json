@@ -10,17 +10,26 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": ["onStartupFinished"],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.js",
-  "contributes": {
+"contributes": {
   "viewsContainers": {
     "activitybar": [
-      { "id": "apiExplorer", "title": "API Explorer", "icon": "$(globe)" }
+      {
+        "id": "apiExplorer",
+        "title": "API Explorer",
+        "icon": "$(globe)"
+      }
     ]
   },
   "views": {
     "apiExplorer": [
-      { "id": "apiExplorer.resources", "name": "Resources" }
+      {
+        "id": "apiExplorer.resources",
+        "name": "Resources"
+      }
     ]
   },
   "commands": [
@@ -49,6 +58,17 @@
         "type": "string",
         "default": "https://jsonplaceholder.typicode.com",
         "description": "Base URL of the REST API to explore."
+      },
+      "apiExplorer.resources": {
+        "type": "array",
+        "items": { "type": "string" },
+        "default": ["posts", "users", "todos"],
+        "description": "Endpoints to show as folders in the tree, e.g. products or users/1/posts."
+      },
+      "apiExplorer.queryString": {
+        "type": "string",
+        "default": "_limit=20",
+        "description": "Query string added to every request, e.g. limit=20. Leave empty for none."
       }
     }
   }

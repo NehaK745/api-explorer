@@ -1,29 +1,37 @@
 import * as vscode from 'vscode';
 
-export type ResourceName = 'posts' | 'users' | 'todos';
-const RESOURCES: ResourceName[] = ['posts', 'users', 'todos'];
-
 export class ResourceNode extends vscode.TreeItem {
   constructor(
     label: string,
     collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly resource: ResourceName,
+    public readonly resource: string,
     public readonly data?: Record<string, unknown>
   ) {
     super(label, collapsibleState);
     if (data) {
-      // Leaf node: clicking it runs this command with the node as argument
       this.command = {
         command: 'api-explorer.openItem',
         title: 'Open Item',
         arguments: [this]
       };
       this.iconPath = new vscode.ThemeIcon('symbol-field');
-      this.tooltip = `${resource} #${data.id}`;
+      this.tooltip = `${resource} ${data.id !== undefined ? '#' + data.id : ''}`;
     } else {
       this.iconPath = new vscode.ThemeIcon('folder');
     }
   }
+}
+
+// APIs return different shapes: [..], or { products: [..] }, or a single object.
+function toList(json: unknown): unknown[] {
+  if (Array.isArray(json)) {
+    return json;
+  }
+  if (json && typeof json === 'object') {
+    const firstArray = Object.values(json).find(Array.isArray);
+    return firstArray ?? [json];
+  }
+  return [json];
 }
 
 export class ResourceProvider implements vscode.TreeDataProvider<ResourceNode> {
@@ -31,7 +39,7 @@ export class ResourceProvider implements vscode.TreeDataProvider<ResourceNode> {
   readonly onDidChangeTreeData = this._onDidChange.event;
 
   refresh(): void {
-    this._onDidChange.fire(undefined); // undefined = refresh the whole tree
+    this._onDidChange.fire(undefined);
   }
 
   getTreeItem(element: ResourceNode): vscode.TreeItem {
@@ -39,40 +47,46 @@ export class ResourceProvider implements vscode.TreeDataProvider<ResourceNode> {
   }
 
   async getChildren(element?: ResourceNode): Promise<ResourceNode[]> {
-    // Root level: the three resource folders
     if (!element) {
-      return RESOURCES.map(
+      const resources = vscode.workspace
+        .getConfiguration('apiExplorer')
+        .get<string[]>('resources', []);
+      return resources.map(
         r => new ResourceNode(r, vscode.TreeItemCollapsibleState.Collapsed, r)
       );
     }
-    // Child level: fetch items for this resource
     if (!element.data) {
       return this.fetchItems(element.resource);
     }
     return [];
   }
 
-  private async fetchItems(resource: ResourceName): Promise<ResourceNode[]> {
-    const baseUrl = vscode.workspace
-      .getConfiguration('apiExplorer')
-      .get<string>('baseUrl', '')
-      .replace(/\/+$/, '');
+  private async fetchItems(resource: string): Promise<ResourceNode[]> {
+    const config = vscode.workspace.getConfiguration('apiExplorer');
+    const baseUrl = config.get<string>('baseUrl', '').replace(/\/+$/, '');
+    const query = config.get<string>('queryString', '').replace(/^\?/, '');
+    const path = resource.replace(/^\/+/, '');
+    const url = `${baseUrl}/${path}${query ? `?${query}` : ''}`;
 
     try {
-      const res = await fetch(`${baseUrl}/${resource}?_limit=20`, {
-        signal: AbortSignal.timeout(10_000)
-      });
+      const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
       if (!res.ok) {
         throw new Error(`HTTP ${res.status} ${res.statusText}`);
       }
-      const items = (await res.json()) as Record<string, unknown>[];
-      return items.map(item => {
-        const label = String(item.title ?? item.name ?? `#${item.id}`);
+      const items = toList(await res.json());
+      return items.map((item, index) => {
+        const record: Record<string, unknown> =
+          item !== null && typeof item === 'object'
+            ? (item as Record<string, unknown>)
+            : { value: item };
+        const label = String(
+          record.title ?? record.name ?? record.id ?? `item ${index + 1}`
+        );
         return new ResourceNode(
           label,
           vscode.TreeItemCollapsibleState.None,
           resource,
-          item
+          record
         );
       });
     } catch (err) {

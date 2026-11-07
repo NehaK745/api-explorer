@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { ResourceProvider, ResourceNode } from './resourceProvider';
+import { DetailPanel } from './detailPanel';
 
 export function activate(context: vscode.ExtensionContext) {
   // Status bar (Stage 2)
@@ -51,20 +52,20 @@ export function activate(context: vscode.ExtensionContext) {
     }),
 
     vscode.commands.registerCommand('api-explorer.refresh', () => provider.refresh()),
-
     vscode.commands.registerCommand('api-explorer.openItem', (node: ResourceNode) => {
-      // Temporary: Stage 4 replaces this with a webview
-      vscode.window.showInformationMessage(JSON.stringify(node.data));
+      if (node.data) {
+      DetailPanel.show(`${node.resource} ${node.data.id !== undefined ? '#' + node.data.id : ''}`, node.data);
+      }
     })
   ];
 
   // Refresh the UI when the setting changes
-  const onConfigChange = vscode.workspace.onDidChangeConfiguration(e => {
-    if (e.affectsConfiguration('apiExplorer.baseUrl')) {
-      updateStatusBar();
-      provider.refresh();
-    }
-  });
+const onConfigChange = vscode.workspace.onDidChangeConfiguration(e => {
+  if (e.affectsConfiguration('apiExplorer')) {
+    updateStatusBar();
+    provider.refresh();
+  }
+});
 
   context.subscriptions.push(statusBar, treeView, onConfigChange, ...commands);
 }
