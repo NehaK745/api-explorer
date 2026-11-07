@@ -1,6 +1,7 @@
-# API Explorer
-
 A Visual Studio Code extension for exploring REST APIs.
+
+<img width="1892" height="917" alt="image" src="https://github.com/user-attachments/assets/718fecd4-5cdb-48d2-a424-fc826a81992e" />
+
 
 ## Features
 - Browse posts, users, and todos.
