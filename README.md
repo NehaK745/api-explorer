@@ -2,8 +2,7 @@
 
 Browse any REST API from the VS Code sidebar. Pick a base URL, choose which endpoints to show, and open any record in a detail panel without leaving your editor.
 
-<img width="1877" height="815" alt="image" src="https://github.com/user-attachments/assets/40ee2f6a-ec17-446a-8578-04e42ba05d56" />
-
+<img width="1892" height="917" alt="image" src="https://github.com/user-attachments/assets/718fecd4-5cdb-48d2-a424-fc826a81992e" 
 
 ## Features
 

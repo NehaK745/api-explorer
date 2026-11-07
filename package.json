@@ -1,8 +1,12 @@
 {
   "name": "api-explorer",
-  "publisher": "neha-dev",
+  "publisher": "NehaDev",
   "license": "MIT",
-  "displayName": "api-explorer",
+  "repository": {
+  "type": "git",
+  "url": "https://github.com/NehaK745/api-explorer.git"
+},
+  "name": "rest-api-explorer-tree",
   "description": "new",
   "version": "0.0.1",
   "engines": {
