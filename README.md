@@ -2,7 +2,7 @@
 
 Browse any REST API from the VS Code sidebar. Pick a base URL, choose which endpoints to show, and open any record in a detail panel without leaving your editor.
 
-![API Explorer Screenshot](images/screenshot.png)
+![API Explorer Screenshot](images/image.png)
 ## Features
 
 - **Sidebar tree view** of the endpoints you choose, loaded lazily when you expand a folder.
