@@ -12,8 +12,11 @@ Browse any REST API from the VS Code sidebar. Pick a base URL, choose which endp
 - **Token support.** Call private APIs with a token stored in your operating system's keychain, never in a settings file.
 - **Status bar shortcut** showing the current base URL. Click it to change it.
 - **Friendly errors** with a 10 second timeout, so a slow or broken API never freezes the editor.
+  
 
 ## Getting started
+
+[**Install API Explorer from the VS Code Marketplace**](https://marketplace.visualstudio.com/items?itemName=NehaDev.rest-api-explorer-tree)
 
 1. Click the **API Explorer** icon in the Activity Bar.
 2. Expand a folder to load its items.
