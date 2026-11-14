@@ -2,12 +2,14 @@
 
 Browse any REST API from the VS Code sidebar. Pick a base URL, choose which endpoints to show, and open any record in a detail panel without leaving your editor.
 
-![API Explorer Screenshot](images/image.png)
+![API Explorer tree view and detail panel](images/image.png)
+
 ## Features
 
 - **Sidebar tree view** of the endpoints you choose, loaded lazily when you expand a folder.
 - **Detail panel** that opens beside your code with the record's fields in a table, plus a Copy JSON button.
 - **Works with any JSON API.** Handles plain arrays, wrapped results like `{ "products": [...] }`, and single objects.
+- **Token support.** Call private APIs with a token stored in your operating system's keychain, never in a settings file.
 - **Status bar shortcut** showing the current base URL. Click it to change it.
 - **Friendly errors** with a 10 second timeout, so a slow or broken API never freezes the editor.
 
@@ -19,11 +21,20 @@ Browse any REST API from the VS Code sidebar. Pick a base URL, choose which endp
 
 The default setup uses the free demo API at `jsonplaceholder.typicode.com`.
 
+## Using a private API
+
+1. Set `apiExplorer.baseUrl` to your API.
+2. Set `apiExplorer.resources` to the endpoints you want to browse.
+3. Run **API Explorer: Set Token** and enter your token. It's stored securely in your OS keychain.
+
+If an API answers 401 or 403, the extension offers a one-click **Set Token** prompt.
+
 ## Settings
 
 | Setting | Default | Description |
 |---|---|---|
-| `apiExplorer.baseUrl` | `https://jsonplaceholder.typicode.com` | Base URL of the API |
+| `apiExplorer.baseUrl` | `https://jsonplaceholder.typicode.com` | Base URL of the API (user-level only, so a project can't redirect your token) |
+| `apiExplorer.authScheme` | `Bearer` | Prefix for the Authorization header, e.g. `Bearer` or `Token`. Leave empty to send the raw token |
 | `apiExplorer.resources` | `["posts", "users", "todos"]` | Endpoints shown as folders, e.g. `products` or `users/1/posts` |
 | `apiExplorer.queryString` | `_limit=20` | Query string added to every request, e.g. `limit=20` |
 
@@ -33,11 +44,20 @@ Example for another API: set the base URL to `https://dummyjson.com`, resources 
 
 - **API Explorer: Refresh** reloads the tree.
 - **API Explorer: Set Base URL** changes the API.
+- **API Explorer: Set Token** stores a token securely in your OS keychain.
+- **API Explorer: Clear Token** removes the stored token.
+
+## Security
+
+- Tokens are stored with VS Code's secret storage (your OS keychain), not in settings.
+- The token is never sent over plain `http://`, except to `localhost`.
+- The base URL can't be overridden by workspace settings.
+- The detail panel escapes all API data and uses a strict Content Security Policy.
 
 ## Limitations
 
 - Read-only: only GET requests.
-- No authentication yet. Token support is planned.
+- One token for all endpoints.
 
 ## Requirements
 

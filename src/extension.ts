@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
-import { ResourceProvider, ResourceNode } from './resourceProvider';
+import { ResourceProvider, ResourceNode, TOKEN_KEY } from './resourceProvider';
 import { DetailPanel } from './detailPanel';
+
 
 export function activate(context: vscode.ExtensionContext) {
   // Status bar (Stage 2)
@@ -15,12 +16,28 @@ export function activate(context: vscode.ExtensionContext) {
   updateStatusBar();
 
   // Tree view (Stage 3)
-  const provider = new ResourceProvider();
+  const provider = new ResourceProvider(context.secrets);
   const treeView = vscode.window.createTreeView('apiExplorer.resources', {
     treeDataProvider: provider
   });
 
   const commands = [
+    vscode.commands.registerCommand('api-explorer.setToken', async () => {
+      const token = await vscode.window.showInputBox({
+        prompt: 'Enter your API token (stored securely in your OS keychain)',
+        password: true,
+        ignoreFocusOut: true
+      });
+      if (token) {
+        await context.secrets.store(TOKEN_KEY, token);
+        vscode.window.showInformationMessage('API Explorer: token saved.');
+      }
+    }),
+
+    vscode.commands.registerCommand('api-explorer.clearToken', async () => {
+      await context.secrets.delete(TOKEN_KEY);
+      vscode.window.showInformationMessage('API Explorer: token cleared.');
+    }),
     vscode.commands.registerCommand('api-explorer.helloWorld', () => {
       vscode.window.showInformationMessage('Hello World from api-explorer!');
     }),
@@ -54,20 +71,24 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('api-explorer.refresh', () => provider.refresh()),
     vscode.commands.registerCommand('api-explorer.openItem', (node: ResourceNode) => {
       if (node.data) {
-      DetailPanel.show(`${node.resource} ${node.data.id !== undefined ? '#' + node.data.id : ''}`, node.data);
+        DetailPanel.show(`${node.resource} ${node.data.id !== undefined ? '#' + node.data.id : ''}`, node.data);
       }
     })
   ];
 
   // Refresh the UI when the setting changes
-const onConfigChange = vscode.workspace.onDidChangeConfiguration(e => {
-  if (e.affectsConfiguration('apiExplorer')) {
-    updateStatusBar();
+  const onConfigChange = vscode.workspace.onDidChangeConfiguration(e => {
+    if (e.affectsConfiguration('apiExplorer')) {
+      updateStatusBar();
+      provider.refresh();
+    }
+  });
+  const onSecretChange = context.secrets.onDidChange(e => {
+  if (e.key === TOKEN_KEY) {
     provider.refresh();
   }
 });
-
-  context.subscriptions.push(statusBar, treeView, onConfigChange, ...commands);
+ context.subscriptions.push(statusBar, treeView, onConfigChange, onSecretChange, ...commands);
 }
 
-export function deactivate() {}
+export function deactivate() { }

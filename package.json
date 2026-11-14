@@ -1,16 +1,17 @@
 {
-  "name": "api-explorer",
+  "name": "rest-api-explorer-tree",
+  "displayName": "REST API Tree Explorer",
+  "description": "Browse any REST API in a VS Code sidebar tree and open records in a detail panel.",
+  "version": "0.2.0",
   "publisher": "NehaDev",
+  "icon": "images/icon.png",
   "license": "MIT",
   "repository": {
-  "type": "git",
-  "url": "https://github.com/NehaK745/api-explorer.git"
-},
-  "name": "rest-api-explorer-tree",
-  "description": "new",
-  "version": "0.1.0",
+    "type": "git",
+    "url": "https://github.com/NehaK745/api-explorer.git"
+  },
   "engines": {
-    "vscode": "^1.144.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
     "Other"
@@ -19,65 +20,105 @@
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
-"contributes": {
-  "viewsContainers": {
-    "activitybar": [
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "apiExplorer",
+          "title": "API Explorer",
+          "icon": "$(globe)"
+        }
+      ]
+    },
+    "views": {
+      "apiExplorer": [
+        {
+          "id": "apiExplorer.resources",
+          "name": "Resources"
+        }
+      ]
+    },
+    "commands": [
       {
-        "id": "apiExplorer",
-        "title": "API Explorer",
-        "icon": "$(globe)"
-      }
-    ]
-  },
-  "views": {
-    "apiExplorer": [
+        "command": "api-explorer.helloWorld",
+        "title": "Hello World"
+      },
       {
-        "id": "apiExplorer.resources",
-        "name": "Resources"
-      }
-    ]
-  },
-  "commands": [
-    { "command": "api-explorer.helloWorld", "title": "Hello World" },
-    { "command": "api-explorer.shout", "title": "API Explorer: Shout Selection" },
-    { "command": "api-explorer.setBaseUrl", "title": "API Explorer: Set Base URL" },
-    { "command": "api-explorer.refresh", "title": "API Explorer: Refresh", "icon": "$(refresh)" },
-    { "command": "api-explorer.openItem", "title": "API Explorer: Open Item" }
-  ],
-  "menus": {
-    "view/title": [
+        "command": "api-explorer.shout",
+        "title": "API Explorer: Shout Selection"
+      },
+      {
+        "command": "api-explorer.setBaseUrl",
+        "title": "API Explorer: Set Base URL"
+      },
       {
         "command": "api-explorer.refresh",
-        "when": "view == apiExplorer.resources",
-        "group": "navigation"
+        "title": "API Explorer: Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "api-explorer.openItem",
+        "title": "API Explorer: Open Item"
+      },
+      {
+        "command": "api-explorer.setToken",
+        "title": "API Explorer: Set Token"
+      },
+      {
+        "command": "api-explorer.clearToken",
+        "title": "API Explorer: Clear Token"
       }
     ],
-    "commandPalette": [
-      { "command": "api-explorer.openItem", "when": "false" }
-    ]
-  },
+    "menus": {
+      "view/title": [
+        {
+          "command": "api-explorer.refresh",
+          "when": "view == apiExplorer.resources",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "api-explorer.openItem",
+          "when": "false"
+        }
+      ]
+    },
   "configuration": {
-    "title": "API Explorer",
-    "properties": {
-      "apiExplorer.baseUrl": {
-        "type": "string",
-        "default": "https://jsonplaceholder.typicode.com",
-        "description": "Base URL of the REST API to explore."
+  "title": "API Explorer",
+  "properties": {
+    "apiExplorer.baseUrl": {
+      "type": "string",
+      "scope": "machine",
+      "default": "https://jsonplaceholder.typicode.com",
+      "description": "Base URL of the REST API to explore."
+    },
+    "apiExplorer.authScheme": {
+      "type": "string",
+      "scope": "machine",
+      "default": "Bearer",
+      "description": "Prefix for the Authorization header, e.g. Bearer or Token. Leave empty to send the raw token."
+    },
+    "apiExplorer.resources": {
+      "type": "array",
+      "items": {
+        "type": "string"
       },
-      "apiExplorer.resources": {
-        "type": "array",
-        "items": { "type": "string" },
-        "default": ["posts", "users", "todos"],
-        "description": "Endpoints to show as folders in the tree, e.g. products or users/1/posts."
-      },
-      "apiExplorer.queryString": {
-        "type": "string",
-        "default": "_limit=20",
-        "description": "Query string added to every request, e.g. limit=20. Leave empty for none."
-      }
+      "default": [
+        "posts",
+        "users",
+        "todos"
+      ],
+      "description": "Endpoints to show as folders in the tree, e.g. products or users/1/posts."
+    },
+    "apiExplorer.queryString": {
+      "type": "string",
+      "default": "_limit=20",
+      "description": "Query string added to every request, e.g. limit=20. Leave empty for none."
     }
   }
-},
+}
+  },
   "scripts": {
     "vscode:prepublish": "npm run package",
     "compile": "npm run check-types && npm run lint && node esbuild.js",
@@ -93,7 +134,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.144.0",
+    "@types/vscode": "^1.90.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "24.x",
     "typescript-eslint": "^8.61.1",
