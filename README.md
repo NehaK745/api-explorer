@@ -15,6 +15,7 @@ Browse any REST API from the VS Code sidebar. Pick a base URL, choose which endp
 - **Friendly errors** with a 10 second timeout, so a slow or broken API never freezes the editor.
 
 ## Getting started
+[**Install API Explorer from the VS Code Marketplace**](https://marketplace.visualstudio.com/items?itemName=NehaDev.rest-api-explorer-tree)
 
 1. Click the **API Explorer** icon in the Activity Bar.
 2. Expand a folder to load its items, or click **Import from OpenAPI** if the tree is empty.
