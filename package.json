@@ -2,7 +2,7 @@
   "name": "rest-api-explorer-tree",
   "displayName": "REST API Tree Explorer",
   "description": "Browse any REST API in a VS Code sidebar tree and open records in a detail panel.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "NehaDev",
   "icon": "images/icon.png",
   "license": "MIT",
@@ -38,7 +38,18 @@
         }
       ]
     },
+    "viewsWelcome": [
+      {
+        "view": "apiExplorer.resources",
+        "contents": "No endpoints yet.\n[Import from OpenAPI](command:api-explorer.importOpenApi)\nOr add endpoints in the apiExplorer.resources setting."
+      }
+    ],
     "commands": [
+      {
+        "command": "api-explorer.importOpenApi",
+        "title": "API Explorer: Import from OpenAPI",
+        "icon": "$(cloud-download)"
+      },
       {
         "command": "api-explorer.helloWorld",
         "title": "Hello World"
@@ -75,6 +86,11 @@
           "command": "api-explorer.refresh",
           "when": "view == apiExplorer.resources",
           "group": "navigation"
+        },
+        {
+          "command": "api-explorer.importOpenApi",
+          "when": "view == apiExplorer.resources",
+          "group": "navigation"
         }
       ],
       "commandPalette": [
@@ -84,40 +100,40 @@
         }
       ]
     },
-  "configuration": {
-  "title": "API Explorer",
-  "properties": {
-    "apiExplorer.baseUrl": {
-      "type": "string",
-      "scope": "machine",
-      "default": "https://jsonplaceholder.typicode.com",
-      "description": "Base URL of the REST API to explore."
-    },
-    "apiExplorer.authScheme": {
-      "type": "string",
-      "scope": "machine",
-      "default": "Bearer",
-      "description": "Prefix for the Authorization header, e.g. Bearer or Token. Leave empty to send the raw token."
-    },
-    "apiExplorer.resources": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "default": [
-        "posts",
-        "users",
-        "todos"
-      ],
-      "description": "Endpoints to show as folders in the tree, e.g. products or users/1/posts."
-    },
-    "apiExplorer.queryString": {
-      "type": "string",
-      "default": "_limit=20",
-      "description": "Query string added to every request, e.g. limit=20. Leave empty for none."
+    "configuration": {
+      "title": "API Explorer",
+      "properties": {
+        "apiExplorer.baseUrl": {
+          "type": "string",
+          "scope": "machine",
+          "default": "https://jsonplaceholder.typicode.com",
+          "description": "Base URL of the REST API to explore."
+        },
+        "apiExplorer.authScheme": {
+          "type": "string",
+          "scope": "machine",
+          "default": "Bearer",
+          "description": "Prefix for the Authorization header, e.g. Bearer or Token. Leave empty to send the raw token."
+        },
+        "apiExplorer.resources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "posts",
+            "users",
+            "todos"
+          ],
+          "description": "Endpoints to show as folders in the tree, e.g. products or users/1/posts."
+        },
+        "apiExplorer.queryString": {
+          "type": "string",
+          "default": "_limit=20",
+          "description": "Query string added to every request, e.g. limit=20. Leave empty for none."
+        }
+      }
     }
-  }
-}
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

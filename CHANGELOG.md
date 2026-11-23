@@ -1,9 +1,10 @@
-# Change Log
+## 0.3.0
 
-All notable changes to the "api-explorer" extension will be documented in this file.
+- Added: import endpoints from an OpenAPI 3 or Swagger 2 JSON spec.
+- Added: toolbar button and an empty-tree link for the import.
+- Added: unit tests for the spec parser.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## 0.2.0
 
-## [Unreleased]
-
-- Initial release
+- Added: secure token support using the OS keychain.
+- Added: extension icon and an updated README.

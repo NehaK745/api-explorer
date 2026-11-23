@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { ResourceProvider, ResourceNode, TOKEN_KEY } from './resourceProvider';
 import { DetailPanel } from './detailPanel';
+import { importFromOpenApi } from './importOpenApi';
 
 
 export function activate(context: vscode.ExtensionContext) {
@@ -33,6 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('API Explorer: token saved.');
       }
     }),
+
 
     vscode.commands.registerCommand('api-explorer.clearToken', async () => {
       await context.secrets.delete(TOKEN_KEY);
@@ -67,13 +69,14 @@ export function activate(context: vscode.ExtensionContext) {
         await config.update('baseUrl', value, vscode.ConfigurationTarget.Global);
       }
     }),
-
     vscode.commands.registerCommand('api-explorer.refresh', () => provider.refresh()),
+    vscode.commands.registerCommand('api-explorer.importOpenApi', importFromOpenApi),
     vscode.commands.registerCommand('api-explorer.openItem', (node: ResourceNode) => {
       if (node.data) {
         DetailPanel.show(`${node.resource} ${node.data.id !== undefined ? '#' + node.data.id : ''}`, node.data);
       }
     })
+
   ];
 
   // Refresh the UI when the setting changes
@@ -84,11 +87,12 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
   const onSecretChange = context.secrets.onDidChange(e => {
-  if (e.key === TOKEN_KEY) {
-    provider.refresh();
-  }
-});
- context.subscriptions.push(statusBar, treeView, onConfigChange, onSecretChange, ...commands);
+    if (e.key === TOKEN_KEY) {
+      provider.refresh();
+    }
+  });
+  context.subscriptions.push(statusBar, treeView, onConfigChange, onSecretChange, ...commands);
+
 }
 
 export function deactivate() { }
