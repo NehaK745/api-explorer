@@ -4,12 +4,6 @@ Browse any REST API from the VS Code sidebar. Pick a base URL, choose which endp
 
 ![API Explorer tree view and detail panel](images/image.png)
 
-# REST API Tree Explorer
-
-Browse any REST API from the VS Code sidebar. Import endpoints from an OpenAPI or Swagger spec, or add them by hand, and open any record in a detail panel without leaving your editor.
-
-![REST API Tree Explorer tree view and detail panel](images/screenshot.png)
-
 ## Features
 
 - **Import from OpenAPI or Swagger.** Paste a spec URL, tick the endpoints you want, and the tree fills itself.
