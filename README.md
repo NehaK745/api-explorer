@@ -1,8 +1,8 @@
-# API Explorer
+# REST API Tree Explorer
 
-Browse any REST API from the VS Code sidebar. Pick a base URL, choose which endpoints to show, and open any record in a detail panel without leaving your editor.
+Browse any REST API from the VS Code sidebar. Import endpoints from an OpenAPI or Swagger spec, or add them by hand, and open any record in a detail panel without leaving your editor.
 
-![API Explorer tree view and detail panel](images/image.png)
+![REST API Tree Explorer tree view and detail panel](images/image.png)
 
 ## Features
 
