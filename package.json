@@ -2,7 +2,7 @@
   "name": "rest-api-explorer-tree",
   "displayName": "REST API Tree Explorer",
   "description": "Browse any REST API in a VS Code sidebar tree and open records in a detail panel.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "NehaDev",
   "icon": "images/icon.png",
   "license": "MIT",
