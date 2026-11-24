@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 export const TOKEN_KEY = 'apiExplorer.token';
+import { applyAuth } from './core/auth';
+import { sendRequest } from './core/httpClient';
 
 export class ResourceNode extends vscode.TreeItem {
 
@@ -66,65 +68,65 @@ export class ResourceProvider implements vscode.TreeDataProvider<ResourceNode> {
     }
     return [];
   }
-  private async fetchItems(resource: string): Promise<ResourceNode[]> {
-    const config = vscode.workspace.getConfiguration('apiExplorer');
-    const baseUrl = config.get<string>('baseUrl', '').replace(/\/+$/, '');
-    const query = config.get<string>('queryString', '').replace(/^\?/, '');
-    const path = resource.replace(/^\/+/, '');
-    const url = `${baseUrl}/${path}${query ? `?${query}` : ''}`;
+private async fetchItems(resource: string): Promise<ResourceNode[]> {
+  const config = vscode.workspace.getConfiguration('apiExplorer');
+  const baseUrl = config.get<string>('baseUrl', '').replace(/\/+$/, '');
+  const query = config.get<string>('queryString', '').replace(/^\?/, '');
+  const path = resource.replace(/^\/+/, '');
+  const url = `${baseUrl}/${path}${query ? `?${query}` : ''}`;
 
-    const headers: Record<string, string> = { Accept: 'application/json' };
-    const token = await this.secrets.get(TOKEN_KEY);
-    if (token) {
-      const isLocal = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/.test(baseUrl);
-      if (!baseUrl.startsWith('https://') && !isLocal) {
-        vscode.window.showErrorMessage(
-          'API Explorer: refusing to send the token over a non-HTTPS URL.'
-        );
-        return [];
-      }
-      const scheme = config.get<string>('authScheme', 'Bearer').trim();
-      headers['Authorization'] = scheme ? `${scheme} ${token}` : token;
-    }
+  let headers: Record<string, string> = { Accept: 'application/json' };
+  const token = await this.secrets.get(TOKEN_KEY);
+  try {
+    headers = applyAuth(headers, token, {
+      baseUrl,
+      scheme: config.get<string>('authScheme', 'Bearer')
+    });
+  } catch {
+    vscode.window.showErrorMessage(
+      'API Explorer: refusing to send the token over a non-HTTPS URL.'
+    );
+    return [];
+  }
 
-    try {
-      const res = await fetch(url, { headers, signal: AbortSignal.timeout(10_000) });
-      if (res.status === 401 || res.status === 403) {
-        void vscode.window
-          .showErrorMessage(
-            `API Explorer: ${resource} needs a valid token (HTTP ${res.status}).`,
-            'Set Token'
-          )
-          .then(choice => {
-            if (choice === 'Set Token') {
-              void vscode.commands.executeCommand('api-explorer.setToken');
-            }
-          });
-        return [];
-      }
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status} ${res.statusText}`);
-      }
-      const items = toList(await res.json());
-      return items.map((item, index) => {
-        const record: Record<string, unknown> =
-          item !== null && typeof item === 'object'
-            ? (item as Record<string, unknown>)
-            : { value: item };
-        const label = String(
-          record.title ?? record.name ?? record.id ?? `item ${index + 1}`
-        );
-        return new ResourceNode(
-          label,
-          vscode.TreeItemCollapsibleState.None,
-          resource,
-          record
-        );
-      });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      vscode.window.showErrorMessage(`API Explorer: could not load ${resource}. ${message}`);
+  try {
+    const res = await sendRequest({ url, method: 'GET', headers });
+    if (res.status === 401 || res.status === 403) {
+      void vscode.window
+        .showErrorMessage(
+          `API Explorer: ${resource} needs a valid token (HTTP ${res.status}).`,
+          'Set Token'
+        )
+        .then(choice => {
+          if (choice === 'Set Token') {
+            void vscode.commands.executeCommand('api-explorer.setToken');
+          }
+        });
       return [];
     }
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} ${res.statusText}`);
+    }
+    const items = toList(JSON.parse(res.text));
+    return items.map((item, index) => {
+      const record: Record<string, unknown> =
+        item !== null && typeof item === 'object'
+          ? (item as Record<string, unknown>)
+          : { value: item };
+      const label = String(
+        record.title ?? record.name ?? record.id ?? `item ${index + 1}`
+      );
+      return new ResourceNode(
+        label,
+        vscode.TreeItemCollapsibleState.None,
+        resource,
+        record
+      );
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    vscode.window.showErrorMessage(`API Explorer: could not load ${resource}. ${message}`);
+    return [];
   }
+}
 }
