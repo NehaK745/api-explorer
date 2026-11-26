@@ -45,8 +45,15 @@ test('gives up after the timeout', async () => {
     new Promise((_resolve, reject) => {
       init?.signal?.addEventListener('abort', () => reject(new Error('timed out')));
     })) as unknown as typeof fetch;
-  await assert.rejects(
-    () => sendRequest(get, { timeoutMs: 20, fetchImpl: hang }),
-    /timed out/
-  );
+
+  // AbortSignal.timeout does not keep Node alive, so hold the process open ourselves.
+  const keepAlive = setTimeout(() => undefined, 2000);
+  try {
+    await assert.rejects(
+      () => sendRequest(get, { timeoutMs: 20, fetchImpl: hang }),
+      /timed out/
+    );
+  } finally {
+    clearTimeout(keepAlive);
+  }
 });
