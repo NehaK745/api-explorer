@@ -2,7 +2,7 @@
   "name": "rest-api-explorer-tree",
   "displayName": "REST API Tree Explorer",
   "description": "Browse any REST API in a VS Code sidebar tree and open records in a detail panel.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "NehaDev",
   "icon": "images/icon.png",
   "license": "MIT",
@@ -147,7 +147,8 @@
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "test:unit": "npm run compile-tests && node --test \"out/test/**/*.unit.test.js\""
   },
   "devDependencies": {
     "@types/vscode": "^1.90.0",
